@@ -18,20 +18,30 @@ export class LlmError extends Error {
 }
 
 export function getProvider(): "gemini" | "ollama" {
-  return (process.env.LLM_PROVIDER ?? "gemini").toLowerCase() === "ollama" ? "ollama" : "gemini";
+  return (process.env.LLM_PROVIDER ?? "gemini").trim().toLowerCase() === "ollama" ? "ollama" : "gemini";
 }
 
 export function getModelName(): string {
   return getProvider() === "ollama"
-    ? process.env.OLLAMA_MODEL ?? "gemma4:e4b"
-    : process.env.GEMMA_MODEL ?? "gemma-4-26b-a4b-it";
+    ? (process.env.OLLAMA_MODEL ?? "gemma4:e4b").trim()
+    : (process.env.GEMMA_MODEL ?? "gemma-4-26b-a4b-it").trim().replace(/^["']|["']$/g, "").trim() || "gemma-4-26b-a4b-it";
+}
+
+function getApiKey(): string {
+  const raw = process.env.GEMINI_API_KEY ?? "";
+  return raw.trim().replace(/^["']|["']$/g, "").trim();
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function statusOf(e: unknown): number | undefined {
-  const s = (e as { status?: unknown; code?: unknown })?.status ?? (e as { code?: unknown })?.code;
-  return typeof s === "number" ? s : undefined;
+  const s =
+    (e as { status?: unknown; statusCode?: unknown; code?: unknown })?.status ??
+    (e as { statusCode?: unknown })?.statusCode ??
+    (e as { code?: unknown })?.code;
+  if (typeof s === "number") return s;
+  if (typeof s === "string" && /^\d+$/.test(s)) return parseInt(s, 10);
+  return undefined;
 }
 
 /** Retry rate limits and transient 5xx errors with backoff. */
@@ -53,8 +63,8 @@ export async function withRetry<T>(fn: () => Promise<T>, attempts = 3, baseMs = 
 
 let geminiClient: GoogleGenAI | null = null;
 function gemini(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new LlmError("GEMINI_API_KEY is not set. Add it to .env.local.", 500);
+  const apiKey = getApiKey();
+  if (!apiKey) throw new LlmError("GEMINI_API_KEY is not set. Add it in your environment variables (.env.local locally or Vercel Environment Variables).", 500);
   geminiClient ??= new GoogleGenAI({ apiKey });
   return geminiClient;
 }
@@ -75,7 +85,10 @@ async function callGemini(req: LlmRequest): Promise<string> {
     return res.text ?? "";
   } catch (e) {
     // Some model versions reject thinkingConfig. Try once more without it.
-    if (statusOf(e) === 400) {
+    const st = statusOf(e);
+    const msg = e instanceof Error ? e.message : String(e);
+    const isBadReq = st === 400 || msg.includes("400") || msg.toLowerCase().includes("thinking") || msg.toLowerCase().includes("invalid");
+    if (isBadReq) {
       const res = await withRetry(() => run(base));
       return res.text ?? "";
     }
@@ -124,7 +137,8 @@ export async function checkProvider(): Promise<{ ok: boolean; provider: string; 
   const provider = getProvider();
   const model = getModelName();
   if (provider === "gemini") {
-    return process.env.GEMINI_API_KEY
+    const key = getApiKey();
+    return key
       ? { ok: true, provider, model }
       : { ok: false, provider, model, detail: "GEMINI_API_KEY is not set." };
   }
