@@ -9,19 +9,40 @@ import { parseChat, type ChatMessage } from "@/lib/parseChat";
 import { ROLE_INFO } from "@/lib/roles";
 import { SAMPLE_CHAT } from "@/lib/sample";
 import type { ReadResult } from "@/lib/schema";
+import { ANALYZE_MAX_CHARS, type ActionKind, type ExtractKind } from "@/lib/analyze/constants";
+import type { ChatAnalysis } from "@/lib/analyze/schema";
 import { usePrefs } from "./Prefs";
+import ChatSummary from "./ChatSummary";
+import ToolPanel from "./ToolPanel";
 
 const MAX_MESSAGES = 300;
 const CONCURRENCY = 4;
 const STATUS_LABEL: Record<MessageStatus, string> = { added: "✓ Added", cancelled: "✕ Cancelled", ignored: "– Ignored", needs_check: "? Needs a check" };
 
-interface HistoryEntry { id: string; at: string; text: string; readings: MessageReading[]; resolutions: Record<string, number> }
+interface HistoryEntry { id: string; at: string; text: string; readings: MessageReading[]; resolutions: Record<string, number>; analysis?: ChatAnalysis }
 
 function load<T>(key: string, fallback: T): T {
   try { const v = localStorage.getItem(key); return v ? (JSON.parse(v) as T) : fallback; } catch { return fallback; }
 }
 function save(key: string, value: unknown) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* storage full or blocked */ }
+}
+
+async function analyzeText(text: string): Promise<ChatAnalysis> {
+  let lastError = "Couldn't analyze this chat.";
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const res = await fetch("/api/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+      const data = await res.json();
+      if (res.ok) return data.analysis as ChatAnalysis;
+      lastError = data.error ?? lastError;
+      if (res.status === 429 && attempt === 0) { await new Promise((r) => setTimeout(r, 2000)); continue; }
+      break;
+    } catch {
+      lastError = "Network error. Check your connection and try again.";
+    }
+  }
+  throw new Error(lastError);
 }
 
 async function readOne(m: ChatMessage): Promise<MessageReading> {
@@ -65,6 +86,13 @@ export default function Builder() {
   const [notice, setNotice] = useState<string | null>(null);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const runId = useRef(0);
+  const historyId = useRef<string | null>(null);
+  const [analysis, setAnalysis] = useState<ChatAnalysis | null>(null);
+  const [analyzedText, setAnalyzedText] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [activeTool, setActiveTool] = useState<ActionKind | null>(null);
+  const [visited, setVisited] = useState<ExtractKind[]>([]);
+  const [sessionId, setSessionId] = useState(0);
 
   useEffect(() => {
     setHistory(load<HistoryEntry[]>("convoza.history", []));
@@ -82,6 +110,17 @@ export default function Builder() {
   }, [order.groups, prices]);
   const total = grandTotal(order, priceMap);
   const owes = whoOwes(order, priceMap);
+
+  /** One history entry per chat: analysis and order are saved onto the same entry. */
+  const upsertHistory = useCallback((patch: Partial<HistoryEntry> & { text: string }) => {
+    const list = load<HistoryEntry[]>("convoza.history", []);
+    const existing = historyId.current ? list.find((h) => h.id === historyId.current) : undefined;
+    const base: HistoryEntry = existing && existing.text === patch.text ? existing : { id: String(Date.now()), at: "", text: patch.text, readings: [], resolutions: {} };
+    const entry: HistoryEntry = { ...base, ...patch, at: new Date().toISOString() };
+    historyId.current = entry.id;
+    const hist = [entry, ...list.filter((h) => h.id !== entry.id)].slice(0, 8);
+    save("convoza.history", hist); setHistory(hist);
+  }, []);
 
   const build = useCallback(async (source: string) => {
     setError(null); setBills([]); setNotice(null); setResolutions({}); setCustom({}); setOpenMsg(null);
@@ -103,10 +142,32 @@ export default function Builder() {
     await Promise.all(Array.from({ length: Math.min(CONCURRENCY, messages.length) }, worker));
     if (runId.current !== id) return;
     setReadings(out); setPhase("done");
-    const entry: HistoryEntry = { id: String(Date.now()), at: new Date().toISOString(), text: source, readings: out, resolutions: {} };
-    const hist = [entry, ...load<HistoryEntry[]>("convoza.history", [])].slice(0, 8);
-    save("convoza.history", hist); setHistory(hist);
-  }, []);
+    upsertHistory({ text: source, readings: out, resolutions: {} });
+  }, [upsertHistory]);
+
+  const analyze = async (source: string) => {
+    setError(null);
+    if (source.trim().length > ANALYZE_MAX_CHARS) { setError(`That chat is too long to analyze. Paste up to ${ANALYZE_MAX_CHARS.toLocaleString("en-IN")} characters at a time.`); return; }
+    runId.current++; // stop any order that is still being read
+    setAnalyzing(true); setAnalysis(null); setActiveTool(null); setVisited([]); setReadings([]); setPhase("idle");
+    setBills([]); setResolutions({}); setCustom({}); setOpenMsg(null); setNotice(null);
+    try {
+      const result = await analyzeText(source);
+      historyId.current = null;
+      setAnalysis(result); setAnalyzedText(source); setSessionId((n) => n + 1);
+      upsertHistory({ text: source, analysis: result, readings: [], resolutions: {} });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Couldn't analyze this chat.");
+    } finally {
+      setAnalyzing(false);
+    }
+  };
+
+  const pickTool = (kind: ActionKind) => {
+    setActiveTool(kind);
+    if (kind === "receipt") { if (phase !== "done") void build(analyzedText); return; }
+    setVisited((v) => (v.includes(kind) ? v : [...v, kind]));
+  };
 
   const flash = (m: string) => { setNotice(m); setTimeout(() => setNotice(null), 2200); };
   const copy = async (s: string, label: string) => { try { await navigator.clipboard.writeText(s); flash(`✓ ${label} copied`); } catch { flash("Couldn't copy. Select and copy manually."); } };
@@ -130,9 +191,16 @@ export default function Builder() {
     save("convoza.bills", all); setBills(made);
   };
 
-  const openHistory = (h: HistoryEntry) => { setText(h.text); setReadings(h.readings); setResolutions(h.resolutions); setPhase("done"); setBills([]); };
+  const openHistory = (h: HistoryEntry) => {
+    runId.current++; historyId.current = h.id;
+    setText(h.text); setReadings(h.readings); setResolutions(h.resolutions); setPhase(h.readings.length > 0 ? "done" : "idle"); setBills([]); setError(null);
+    setAnalysis(h.analysis ?? null); setAnalyzedText(h.analysis ? h.text : ""); setSessionId((n) => n + 1);
+    setActiveTool(h.readings.length > 0 && h.analysis ? "receipt" : null); setVisited([]);
+  };
   const pct = progress.total ? Math.round((progress.done / progress.total) * 100) : 0;
-  const hasOrder = phase === "done";
+  const hasOrder = phase === "done" && (activeTool === null || activeTool === "receipt");
+  const stale = !!analysis && text.trim() !== analyzedText.trim();
+  const busy = phase === "reading" || analyzing;
   const pricedAny = order.groups.some((g) => priceMap[g.key] != null);
 
   return (
@@ -148,10 +216,11 @@ export default function Builder() {
           <label className="lbl" htmlFor="chat">Paste the chat</label>
           <textarea id="chat" className="field" value={text} onChange={(e) => setText(e.target.value)} placeholder={"Rahul: 2 blue notebooks bhej dena\nAyush: red pen cancel kar do"} />
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 12 }}>
-            <button className="btn btn-primary" disabled={phase === "reading" || !text.trim()} onClick={() => build(text)}>{phase === "reading" ? "Reading…" : "Build order"}</button>
+            <button className="btn btn-primary" disabled={busy || !text.trim()} onClick={() => analyze(text)}>{analyzing ? "Analyzing…" : phase === "reading" ? "Reading…" : "Analyze chat"}</button>
             <button className="btn" onClick={() => setText(SAMPLE_CHAT)}>Load sample chat</button>
             <label className="btn" style={{ cursor: "pointer" }}>Upload .txt<input type="file" accept=".txt,text/plain" className="sr" onChange={(e) => onFile(e.target.files?.[0])} /></label>
           </div>
+          {analyzing && <p className="muted" role="status" style={{ margin: "14px 0 0" }}>Reading the whole chat…</p>}
           {phase === "reading" && (
             <div style={{ marginTop: 14 }} role="status">
               <div style={{ height: 14, background: "var(--paper-2)", border: "2px solid var(--ink)", borderRadius: 999, overflow: "hidden" }}><div style={{ width: `${pct}%`, height: "100%", background: "var(--accent)", transition: "width .2s" }} /></div>
@@ -160,19 +229,28 @@ export default function Builder() {
           )}
         </div>
 
+        <div className="grid" style={{ gap: 24 }}>
+        {analysis && <ChatSummary analysis={analysis} active={activeTool} stale={stale} busy={busy} onPick={pickTool} />}
         <div className="card">
           <h2 className="h3">Recent convozas</h2>
           {history.length === 0 ? <p className="muted" style={{ margin: 0 }}>Nothing yet. Your last few orders will appear here.</p> : (
             <div className="grid" style={{ gap: 8 }}>
               {history.slice(0, 4).map((h) => (
                 <button key={h.id} className="btn btn-sm" style={{ justifyContent: "space-between" }} onClick={() => openHistory(h)}>
-                  <span>{new Date(h.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</span><span className="muted">{h.readings.length} messages</span>
+                  <span>{new Date(h.at).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}</span><span className="muted">{parseChat(h.text).length} messages</span>
                 </button>
               ))}
             </div>
           )}
         </div>
+        </div>
       </div>
+
+      {analysis && visited.length > 0 && (
+        <div className="grid" style={{ gap: 28, marginTop: 36 }}>
+          {visited.map((k) => <ToolPanel key={`${sessionId}:${k}`} kind={k} text={analyzedText} hidden={activeTool !== k} />)}
+        </div>
+      )}
 
       {hasOrder && (
         <div className="grid" style={{ gap: 28, marginTop: 36 }}>

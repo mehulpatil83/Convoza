@@ -45,6 +45,8 @@ app/
   crowdmind/page.tsx      feed
   start/page.tsx          role picker
   bill/[id]/page.tsx      printable bill (reads browser localStorage)
+  api/analyze/route.ts    Gemma job 3: summary + suggested tools for a whole chat
+  api/extract/route.ts    Gemma job 4: timeline | calendar | checklist | expenses | announcements | delivery
   api/parse/route.ts      Gemma job 1: read ONE message
   api/crowdmind/posts/route.ts   Gemma job 2: check a post; GET feed (header x-convoza-role)
   api/health/route.ts     provider reachability
@@ -53,6 +55,8 @@ lib/
   llm.ts            ONLY file that calls Gemma (gemini or ollama, retries, health check)
   llmJson.ts        clean JSON, zod-validate, retry once
   prompt.ts         order prompt with worked examples
+  analyze/          chat analysis + extraction: constants, schema (zod), prompt, guard, analyzeChat
+  calendar.ts       dates, India time, Google Calendar link, .ics
   readMessage.ts    trivial-chatter skip -> model -> guard
   schema.ts         zod + JSON schema for job 1
   guard.ts          quote check, dedupe, trivial chatter

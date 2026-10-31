@@ -19,6 +19,22 @@ In hostels, classes, housing societies and kirana shops, one person collects eve
 
 **Extras beyond the basics:** UPI payment QR and deep link on each bill, "Share on WhatsApp", CSV export, saved history of recent orders, a code-level scam pre-filter that runs before the model, a per-IP rate limiter, a `/api/health` check, and a switchable AI provider.
 
+## Chat analysis and tools
+
+Paste any chat and press **Analyze chat**. Convoza writes a detailed summary beside the box (people, key points with quoted evidence, decisions, open questions, scam warnings), then offers the tools that fit the chat:
+
+| Tool | Built from |
+| --- | --- |
+| Create receipt | orders: grouped items, exact bills (the original order builder) |
+| Create expense summary | shared costs, paid vs pending, totals in code |
+| Create task checklist | tasks, owners, deadlines |
+| Create Google Calendar schedule | events and times; editable; "Add to Google Calendar" link and `.ics` download |
+| Create announcements digest | notices, deadlines, links |
+| Create delivery tracker | delivered, late, missing, pickups |
+| Create interactive timeline | project steps, owners, dates; filter and mark done |
+
+Gemma picks the tools; code adds any tool the topics call for, checks every quote, validates dates and amounts, and does all totals. If the chat doesn't give a clear date, you pick it. Nothing is guessed.
+
 ## AI where it matters, code where it counts
 
 | Gemma 4 | Plain TypeScript |
