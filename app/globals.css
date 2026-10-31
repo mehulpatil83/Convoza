@@ -50,6 +50,7 @@ a { color: inherit; }
 
 .shell { position: relative; overflow-x: clip; min-height: 100vh; }
 .shell > .hdr, .shell > main, .shell > footer { position: relative; z-index: 1; }
+.shell > .hdr { z-index: 50; }
 .wrap { max-width: 1400px; margin: 0 auto; padding: 0 28px; }
 .wrap-wide { max-width: 1580px; }
 .section { padding-top: 84px; padding-bottom: 84px; }
@@ -140,7 +141,7 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .tbl tfoot td { border-bottom: 0; padding-top: 14px; font-size: 1.1rem; }
 
 /* ---- Header ---- */
-.hdr { position: sticky; top: 0; z-index: 20; background-color: var(--paper); background-image: var(--noise); border-bottom: 1.5px solid var(--line); overflow: visible; }
+.hdr { position: sticky; top: 0; z-index: 50; background-color: var(--paper); background-image: var(--noise); border-bottom: 1.5px solid var(--line); overflow: visible; }
 .hdr::before, .hdr::after { content: ""; position: absolute; top: 0; background: var(--noise), var(--olive); pointer-events: none; }
 .hdr::before { right: 11%; width: clamp(90px, 11.5vw, 190px); height: clamp(36px, 4.6vw, 76px); clip-path: polygon(0 100%, 100% 0, 0 0); }
 .hdr::after { right: 0; width: clamp(34px, 4.6vw, 76px); height: clamp(34px, 4.6vw, 76px); clip-path: polygon(100% 0, 100% 100%, 0 0); }
@@ -156,7 +157,7 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .menu { position: relative; }
 .menu-short { display: none; font-weight: 800; }
 @media (max-width: 560px) { .menu-long { display: none; } .menu-short { display: inline; } .hdr .menu .btn-sm { padding: 6px 14px; min-width: 42px; } .hdr .btn-dark.btn-sm { padding: 8px 14px; } }
-.menu-pop { position: absolute; right: 0; top: calc(100% + 8px); min-width: 180px; background: var(--card); border: 2px solid var(--ink); border-radius: 16px; padding: 6px; box-shadow: -4px 5px 0 var(--ink); z-index: 30; }
+.menu-pop { position: absolute; right: 0; top: calc(100% + 8px); min-width: 180px; background: var(--card); border: 2px solid var(--ink); border-radius: 16px; padding: 6px; box-shadow: -4px 5px 0 var(--ink); z-index: 1000; }
 .menu-pop button { display: block; width: 100%; text-align: left; padding: 9px 12px; border: 0; background: transparent; font: inherit; color: inherit; border-radius: 10px; cursor: pointer; }
 .menu-pop button:hover, .menu-pop button[aria-checked="true"] { background: color-mix(in srgb, var(--hi) 55%, transparent); font-weight: 800; }
 @media (max-width: 980px) { .nav { display: none; } }
