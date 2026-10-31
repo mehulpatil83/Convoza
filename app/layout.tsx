@@ -7,6 +7,13 @@ import { Decor } from "@/components/Art";
 export const metadata: Metadata = {
   title: "Convoza: from chat to clarity",
   description: "Convoza turns messy WhatsApp chats into clean, structured orders with Gemma 4. Bills, a community feed, and who owes what.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
 };
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
