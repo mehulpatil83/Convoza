@@ -15,7 +15,7 @@ In hostels, classes, housing societies and kirana shops, one person collects eve
 - **Exact billing.** Prices, totals and splits are integer paise. Amounts are written in Indian words (Lakh, Crore). Group bills split shared charges to the paisa.
 - **Three roles.** Consumer, Community (group) and Merchant (shop) decide who a bill is from and to.
 - **Crowdmind feed.** Shops, groups and buyers post stock, offers and quote requests. Gemma tags each post, summarises it, pulls out quoted prices and blocks OTP, UPI PIN and advance-payment scams. If a post can't be checked, it isn't published.
-- **Themes and languages.** Convoza Classic, Vintage and Mono themes. The landing page is available in English, Hindi, Kannada, Gujarati and Bengali.
+- **Themes and languages.** Convoza Classic (the design reference), Vintage and Mono themes. The landing page is available in English, Hindi, Kannada, Gujarati and Bengali.
 
 **Extras beyond the basics:** UPI payment QR and deep link on each bill, "Share on WhatsApp", CSV export, saved history of recent orders, a code-level scam pre-filter that runs before the model, a per-IP rate limiter, a `/api/health` check, and a switchable AI provider.
 
@@ -99,3 +99,11 @@ Convoza is Hacktoberfest friendly. See [CONTRIBUTING.md](CONTRIBUTING.md) for go
 ## License
 
 MIT
+
+## Design
+
+The whole site follows one reference: [`docs/design/convoza-landing-reference.png`](docs/design/convoza-landing-reference.png). Kraft-paper grain, heavy black type, yellow brush highlights, red / yellow / olive shapes, hard offset shadows and pill buttons.
+
+- All colours, shadows and shapes live as CSS variables and classes in `app/globals.css` (`.brush`, `.tag`, `.card`, `.nb`, `.btn`, `.btn-primary`, `.btn-dark`, `.sticker`, `.strip`).
+- Illustrations (logo, spark lines, star, icons) are inline SVG in `components/Art.tsx`. No image files or web fonts are needed.
+- The Vintage and Mono themes reuse the same layout with different variables, so new pages get all three for free.

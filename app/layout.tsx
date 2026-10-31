@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { PrefsProvider } from "@/components/Prefs";
 import Header from "@/components/Header";
+import { Decor } from "@/components/Art";
 
 export const metadata: Metadata = {
   title: "Convoza: from chat to clarity",
@@ -18,8 +19,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head>
       <body>
         <PrefsProvider>
-          <Header />
-          <main id="top">{children}</main>
+          <div className="shell">
+            <Decor />
+            <Header />
+            <main id="top">{children}</main>
+          </div>
         </PrefsProvider>
       </body>
     </html>

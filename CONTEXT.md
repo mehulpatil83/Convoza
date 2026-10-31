@@ -14,7 +14,7 @@ Goal: match Parchi's features and flows, plus extras, powered by Gemma 4.
 - Reason for cloud: the dev machine is weak (no usable GPU, limited RAM) and downloads should stay small.
 - Storage for Crowdmind: Supabase optional. Without it, posts live in server memory and reset on restart. Not yet decided for deployment.
 - Roles are self-chosen (demo). A real launch needs verified merchant accounts.
-- Design: ruled-notebook look (blue rules, red margin), three themes (Classic, Vintage, Mono), system fonts only.
+- Design: follows `docs/design/convoza-landing-reference.png` on every page (kraft paper grain, heavy black type, yellow brush highlights, red/yellow/olive shapes, hard offset shadows, pill buttons). Three themes (Classic = the reference, Vintage, Mono), system fonts only. Illustrations are inline SVG in `components/Art.tsx`.
 
 ## 3. Golden rule
 
@@ -48,7 +48,7 @@ app/
   api/parse/route.ts      Gemma job 1: read ONE message
   api/crowdmind/posts/route.ts   Gemma job 2: check a post; GET feed (header x-convoza-role)
   api/health/route.ts     provider reachability
-components/  Builder, Crowdmind, Header, Landing, Prefs (theme, language, role, name), RoleGate
+components/  Art (SVG logo, icons, shapes), Builder, Crowdmind, Header, Landing, Prefs (theme, language, role, name), RoleGate
 lib/
   llm.ts            ONLY file that calls Gemma (gemini or ollama, retries, health check)
   llmJson.ts        clean JSON, zod-validate, retry once

@@ -30,7 +30,7 @@ export default function BillPage() {
   if (bill === null) {
     return (
       <div className="wrap section">
-        <h1 className="h2 serif">Bill not found</h1>
+        <h1 className="h2">Bill <span className="brush">not found</span></h1>
         <p className="lead">Bills are saved in this browser. Open it on the device where you made it, or build a new one.</p>
         <Link href="/build" className="btn btn-primary">Build a Convoza</Link>
       </div>
@@ -46,14 +46,14 @@ export default function BillPage() {
         <Link href="/build" className="btn">Back to builder</Link>
       </div>
 
-      <article className="nb" aria-label={`Bill ${bill.number}`}>
-        <h1 className="nb-title serif">Bill {bill.number}</h1>
+      <article className="nb" style={{ padding: "22px 30px 14px" }} aria-label={`Bill ${bill.number}`}>
+        <h1 className="nb-title">Bill <span className="brush">{bill.number}</span></h1>
         <div className="nb-row muted"><span>{bill.dateIST} (IST)</span><span>{bill.mode === "group" ? "Group bill" : bill.mode === "shop" ? "Customer bill" : "Personal bill"}</span></div>
         <div className="nb-row"><span>From: <b>{bill.from}</b></span><span>To: <b>{bill.to}</b></span></div>
 
         {bill.people.map((p) => (
           <div key={p.name} style={{ marginTop: 16 }}>
-            {bill.mode !== "personal" && bill.mode !== "shop" && <div className="nb-row"><b className="serif" style={{ fontSize: "1.1rem" }}>{p.name}</b><b>{formatPaise(p.totalPaise)}</b></div>}
+            {bill.mode !== "personal" && bill.mode !== "shop" && <div className="nb-row"><b style={{ fontSize: "1.1rem" }}>{p.name}</b><b>{formatPaise(p.totalPaise)}</b></div>}
             <table className="tbl" style={{ background: "transparent" }}>
               <thead><tr><th>Item</th><th className="num">Qty</th><th className="num">Rate</th><th className="num">Amount</th></tr></thead>
               <tbody>
@@ -73,8 +73,8 @@ export default function BillPage() {
           </div>
         ))}
 
-        <div className="nb-row" style={{ marginTop: 12 }}><b style={{ fontSize: "1.2rem" }}>Grand total</b><b style={{ fontSize: "1.2rem" }}>{formatPaise(bill.grandPaise)}</b></div>
-        <p className="serif" style={{ margin: "8px 0 0", lineHeight: "32px" }}>{bill.words}</p>
+        <div className="nb-row nb-total" style={{ marginTop: 12 }}><span>Grand total</span><span className="brush">{formatPaise(bill.grandPaise)}</span></div>
+        <p style={{ margin: "10px 0 8px", fontWeight: 600, lineHeight: 1.5 }}>{bill.words}</p>
       </article>
     </div>
   );

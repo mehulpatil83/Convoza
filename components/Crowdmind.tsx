@@ -108,7 +108,7 @@ function Feed({ role }: { role: Role }) {
         {loading ? <p className="muted">Loading posts…</p> : shown.length === 0 ? <p className="muted">No posts match. Be the first to post something.</p> : (
           <div className="grid grid-2">
             {shown.map((p) => (
-              <article key={p.id} className="card">
+              <article key={p.id} className="card" style={{ boxShadow: "-3px 4px 0 var(--ink)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 8, marginBottom: 6 }}>
                   <b>{p.author}</b><span className="muted">{ago(p.createdAt)}</span>
                 </div>
@@ -140,7 +140,7 @@ export default function Crowdmind() {
 export function CrowdmindHeader() {
   return (
     <>
-      <h1 className="h2 serif">Crowdmind</h1>
+      <h1 className="h2"><span className="brush">Crowdmind</span></h1>
       <p className="lead" style={{ marginBottom: 24 }}>A community feed where shops, groups and buyers share stock, offers and quotes. Prices are pulled out and scams are blocked. <Link href="/start">Change role</Link></p>
     </>
   );

@@ -7,10 +7,10 @@ export function RolePicker({ onPick }: { onPick?: (r: Role) => void }) {
   const { role, setRole, name, setName } = usePrefs();
   return (
     <div>
-      <div className="grid grid-3">
+      <div className="grid grid-3 tilt">
         {ROLES.map((r) => (
-          <button key={r} className="card" onClick={() => { setRole(r); onPick?.(r); }} aria-pressed={role === r}
-            style={{ textAlign: "left", cursor: "pointer", font: "inherit", color: "inherit", borderColor: role === r ? "var(--accent)" : undefined, borderWidth: role === r ? 2 : 1 }}>
+          <button key={r} className="card card-btn" onClick={() => { setRole(r); onPick?.(r); }} aria-pressed={role === r}
+            style={{ textAlign: "left", cursor: "pointer", font: "inherit", color: "inherit" }}>
             <h3 className="h3">{ROLE_INFO[r].label}</h3>
             <p className="muted" style={{ margin: 0 }}>{ROLE_INFO[r].blurb}</p>
           </button>
@@ -32,7 +32,7 @@ export default function RoleGate({ children }: { children: React.ReactNode }) {
   if (!role) {
     return (
       <div className="wrap section">
-        <h1 className="h2 serif">Who are you using Convoza as?</h1>
+        <h1 className="h2">Who are you using Convoza <span className="brush">as?</span></h1>
         <p className="lead" style={{ marginBottom: 24 }}>Your role decides who your bills are from and to, and which Crowdmind space you read.</p>
         <RolePicker />
       </div>

@@ -137,7 +137,7 @@ export default function Builder() {
 
   return (
     <div className="wrap section" style={{ paddingTop: 36 }}>
-      <h1 className="h2 serif">Build a Convoza</h1>
+      <h1 className="h2">Build a <span className="brush">Convoza</span></h1>
       <p className="muted" style={{ marginTop: 0 }}>Signed in as {role ? ROLE_INFO[role].label : "…"}. <Link href="/start">Change role</Link></p>
 
       {health && <div className="alert alert-bad" role="alert" style={{ marginBottom: 16 }}><b>Gemma isn&apos;t ready.</b> {health}</div>}
@@ -154,7 +154,7 @@ export default function Builder() {
           </div>
           {phase === "reading" && (
             <div style={{ marginTop: 14 }} role="status">
-              <div style={{ height: 8, background: "var(--paper-2)", borderRadius: 4, overflow: "hidden" }}><div style={{ width: `${pct}%`, height: "100%", background: "var(--accent)", transition: "width .2s" }} /></div>
+              <div style={{ height: 14, background: "var(--paper-2)", border: "2px solid var(--ink)", borderRadius: 999, overflow: "hidden" }}><div style={{ width: `${pct}%`, height: "100%", background: "var(--accent)", transition: "width .2s" }} /></div>
               <p className="muted" style={{ margin: "6px 0 0" }}>Reading message {progress.done} of {progress.total}</p>
             </div>
           )}
@@ -203,7 +203,7 @@ export default function Builder() {
             <h2 className="h3" id="nb-h">Your Convoza</h2>
             {order.groups.length === 0 ? <p className="muted">No items yet. Answer the questions above or paste a different chat.</p> : (
               <div className="nb">
-                <h3 className="nb-title serif">Today&apos;s Convoza</h3>
+                <h3 className="nb-title">Today&apos;s Convoza</h3>
                 {order.groups.map((g) => (
                   <div key={g.key}>
                     <div className="nb-row"><b>{g.name}</b><b>{g.total}</b></div>
@@ -213,7 +213,7 @@ export default function Builder() {
                   </div>
                 ))}
                 {order.cancelled.map((c, i) => <div key={i} className="nb-row" style={{ color: "var(--bad)" }}><span>× {c.name} ({c.sender})</span><span>Cancelled</span></div>)}
-                <div className="nb-row"><b>Total items</b><b>{order.totalItems}</b></div>
+                <div className="nb-row nb-total"><span>Total items</span><span className="brush">{order.totalItems}</span></div>
               </div>
             )}
           </section>
@@ -226,7 +226,7 @@ export default function Builder() {
                 if (!u) return null;
                 const open = openMsg === m.id;
                 return (
-                  <div key={m.id} className="card" style={{ padding: 10 }}>
+                  <div key={m.id} className="card" style={{ padding: 12, boxShadow: "-3px 4px 0 var(--ink)" }}>
                     <button onClick={() => setOpenMsg(open ? null : m.id)} aria-expanded={open}
                       style={{ all: "unset", cursor: "pointer", display: "flex", justifyContent: "space-between", gap: 12, width: "100%" }}>
                       <span><b>{m.sender}</b>: {m.text.length > 80 ? m.text.slice(0, 80) + "…" : m.text}</span>
@@ -271,7 +271,7 @@ export default function Builder() {
               <div className="card">
                 <h2 className="h3">Who owes what</h2>
                 {owes.length === 0 ? <p className="muted" style={{ margin: 0 }}>Type a price to see each person&apos;s share.</p> : owes.map((w) => (
-                  <div key={w.name} className="nb-row" style={{ borderBottom: "1px solid var(--line)" }}><span>{w.name}</span><b>{formatPaise(w.paise)}</b></div>
+                  <div key={w.name} className="nb-row"><span>{w.name}</span><b>{formatPaise(w.paise)}</b></div>
                 ))}
               </div>
             </section>
@@ -287,7 +287,7 @@ export default function Builder() {
                 <a className="btn" target="_blank" rel="noreferrer" href={`https://wa.me/?text=${encodeURIComponent(orderToShopText(order, "Today's Convoza", pricedAny ? total : undefined, formatPaise))}`}>Share on WhatsApp</a>
               </div>
               <span aria-live="polite" style={{ color: "var(--ok)", fontWeight: 600, display: "block", minHeight: 24, marginTop: 8 }}>{notice}</span>
-              <hr style={{ border: 0, borderTop: "1px solid var(--line)", margin: "12px 0 16px" }} />
+              <hr style={{ border: 0, borderTop: "2px dashed var(--line)", margin: "16px 0 18px" }} />
               <h3 className="h3">Generate a bill</h3>
               <p className="muted" style={{ marginTop: 0 }}>{role ? `From ${ROLE_INFO[role].billFrom}, to ${ROLE_INFO[role].billTo}.` : ""}</p>
               <div className="grid grid-3">
