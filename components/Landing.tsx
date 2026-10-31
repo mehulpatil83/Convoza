@@ -57,7 +57,7 @@ function Hero() {
               <Spark style={{ position: "absolute", right: -46, top: -26, width: 44, height: 44 }} />
             </div>
             <h1 className="h1 hero-h1">
-              <span className="ln">Aap order bhejo.</span>
+              <span className="ln">Aap message bhejo.</span>
               <span className="ln">Baaki hum</span>
               <span className="brush">dekh lenge.</span>
             </h1>

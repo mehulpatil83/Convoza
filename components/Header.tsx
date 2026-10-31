@@ -33,20 +33,38 @@ export default function Header() {
         <Link href="/" className="brand" aria-label="Convoza home"><Logo /><span>Convoza</span></Link>
         <div style={{ flex: 1 }} />
         <nav className="nav" aria-label="Main">
-          <Link href="/#usage">{t("howto")}</Link>
           <Link href="/#features">{t("features")}</Link>
+          <Link href="/#usage">{t("howto")}</Link>
           <Link href="/crowdmind">{t("crowdmind")}</Link>
           <Link href="/#trust">{t("about")}</Link>
         </nav>
         <div style={{ flex: 1 }} />
-        <Menu label={t("theme")} short="◐">
+        <Menu label={THEMES.find((th) => th.id === theme)?.label ?? t("theme")} short="◐">
           {(close) => THEMES.map((th) => (
-            <button key={th.id} role="menuitemradio" aria-checked={theme === th.id} onClick={() => { setTheme(th.id); close(); }}>{th.label}</button>
+            <button
+              key={th.id}
+              role="menuitemradio"
+              aria-checked={theme === th.id}
+              onClick={() => { setTheme(th.id); close(); }}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>{th.label}</span>
+              {theme === th.id && <span aria-hidden="true" style={{ marginLeft: 8 }}>✓</span>}
+            </button>
           ))}
         </Menu>
-        <Menu label={`अ ${t("language")}`} short="अ">
+        <Menu label={`अ ${LANGS.find((l) => l.code === lang)?.label ?? t("language")}`} short="अ">
           {(close) => LANGS.map((l) => (
-            <button key={l.code} role="menuitemradio" aria-checked={lang === l.code} onClick={() => { setLang(l.code); close(); }}>{l.label}</button>
+            <button
+              key={l.code}
+              role="menuitemradio"
+              aria-checked={lang === l.code}
+              onClick={() => { setLang(l.code); close(); }}
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+            >
+              <span>{l.label}</span>
+              {lang === l.code && <span aria-hidden="true" style={{ marginLeft: 8 }}>✓</span>}
+            </button>
           ))}
         </Menu>
         <span className="get-started">

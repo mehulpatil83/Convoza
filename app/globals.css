@@ -140,7 +140,7 @@ table.tbl { width: 100%; border-collapse: collapse; }
 .tbl tfoot td { border-bottom: 0; padding-top: 14px; font-size: 1.1rem; }
 
 /* ---- Header ---- */
-.hdr { position: sticky; top: 0; z-index: 20; background-color: var(--paper); background-image: var(--noise); border-bottom: 1.5px solid var(--line); overflow: hidden; }
+.hdr { position: sticky; top: 0; z-index: 20; background-color: var(--paper); background-image: var(--noise); border-bottom: 1.5px solid var(--line); overflow: visible; }
 .hdr::before, .hdr::after { content: ""; position: absolute; top: 0; background: var(--noise), var(--olive); pointer-events: none; }
 .hdr::before { right: 11%; width: clamp(90px, 11.5vw, 190px); height: clamp(36px, 4.6vw, 76px); clip-path: polygon(0 100%, 100% 0, 0 0); }
 .hdr::after { right: 0; width: clamp(34px, 4.6vw, 76px); height: clamp(34px, 4.6vw, 76px); clip-path: polygon(100% 0, 100% 100%, 0 0); }

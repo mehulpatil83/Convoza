@@ -47,8 +47,15 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     setReady(true);
   }, []);
 
-  useEffect(() => { document.documentElement.dataset.theme = theme; }, [theme]);
-  useEffect(() => { document.documentElement.lang = lang; }, [lang]);
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.setAttribute("data-theme", theme);
+    document.body?.setAttribute("data-theme", theme);
+  }, [theme]);
+  useEffect(() => {
+    document.documentElement.lang = lang;
+    document.documentElement.setAttribute("lang", lang);
+  }, [lang]);
 
   const setTheme = useCallback((t: Theme) => { setThemeState(t); write("convoza.theme", t); }, []);
   const setLang = useCallback((l: Lang) => { setLangState(l); write("convoza.lang", l); }, []);

@@ -14,7 +14,7 @@ export const BRAND_SCRIPTS = ["Convoza", "कॉन्वोज़ा", "ಕಾ�
 type Dict = Record<string, string>;
 
 const en: Dict = {
-  howto: "How it works", about: "About", tag: "Group Orders. Sorted!", heroSub2: "Turn messy WhatsApp chats into perfect group orders — automatically.", startOrder: "Start Your Order", getStarted: "Get Started", stripSmart: "Smart AI", stripSmartSub: "Understands context", stripGroup: "Group Friendly", stripGroupSub: "Perfect for any group", stripClear: "No Confusion", stripClearSub: "Clear orders, clear payments", stripDrama: "No Drama", stripDramaSub: "Just organised orders",
+  howto: "How it works", about: "About", tag: "Group Orders. Sorted!", heroSub2: "Turn messy WhatsApp chats into perfect group orders — automatically.", startOrder: "Start Convoza", getStarted: "Start Convoza", stripSmart: "Smart AI", stripSmartSub: "Understands context", stripGroup: "Group Friendly", stripGroupSub: "Perfect for any group", stripClear: "No Confusion", stripClearSub: "Clear orders, clear payments", stripDrama: "No Drama", stripDramaSub: "Just organised orders",
   features: "Features", crowdmind: "Crowdmind", build: "Build a Convoza", sample: "Try a sample chat",
   theme: "Theme", language: "Language",
   heroA: "WhatsApp messages are messy.", heroB: "Your orders don't have to be.",
@@ -24,7 +24,7 @@ const en: Dict = {
   footTag: "From chat to clarity.", footBuilt: "Built with Gemma. Made for everyday chaos.",
 };
 const hi: Dict = {
-  howto: "कैसे काम करता है", about: "हमारे बारे में", tag: "ग्रुप ऑर्डर, सीधे सुलझे!", heroSub2: "बिखरी WhatsApp चैट को परफ़ेक्ट ग्रुप ऑर्डर में बदलें — अपने आप।", startOrder: "ऑर्डर शुरू करें", getStarted: "शुरू करें", stripSmart: "स्मार्ट AI", stripSmartSub: "संदर्भ समझता है", stripGroup: "ग्रुप के अनुकूल", stripGroupSub: "हर ग्रुप के लिए बढ़िया", stripClear: "कोई उलझन नहीं", stripClearSub: "साफ़ ऑर्डर, साफ़ भुगतान", stripDrama: "कोई झंझट नहीं", stripDramaSub: "बस सुलझे हुए ऑर्डर",
+  howto: "कैसे काम करता है", about: "हमारे बारे में", tag: "ग्रुप ऑर्डर, सीधे सुलझे!", heroSub2: "बिखरी WhatsApp चैट को परफ़ेक्ट ग्रुप ऑर्डर में बदलें — अपने आप।", startOrder: "Convoza शुरू करें", getStarted: "Convoza शुरू करें", stripSmart: "स्मार्ट AI", stripSmartSub: "संदर्भ समझता है", stripGroup: "ग्रुप के अनुकूल", stripGroupSub: "हर ग्रुप के लिए बढ़िया", stripClear: "कोई उलझन नहीं", stripClearSub: "साफ़ ऑर्डर, साफ़ भुगतान", stripDrama: "कोई झंझट नहीं", stripDramaSub: "बस सुलझे हुए ऑर्डर",
   features: "सुविधाएँ", crowdmind: "Crowdmind", build: "Convoza बनाएँ", sample: "नमूना चैट आज़माएँ",
   theme: "थीम", language: "भाषा",
   heroA: "WhatsApp के मैसेज बिखरे हुए होते हैं।", heroB: "आपके ऑर्डर ऐसे नहीं होने चाहिए।",
